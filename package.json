@@ -1,0 +1,17 @@
+{
+  "name": "main",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "migawari": "~0.0.1",
+    "css": "^1.6.0",
+    "clone": "^0.1.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
