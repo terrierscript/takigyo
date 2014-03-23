@@ -3,22 +3,15 @@ var flatten = require('flatten')
 var migawari = require('migawari')
 var util = require('util')
 var fs = require('fs')
-var gcs = require('gcs')
+var miyable = require('miyable')
 var async = require('async')
 var ruleReplace = require('./lib/rule_replace')
+var injectJs = require('./lib/inject_js')
+var pseudoReplace = require('./lib/pseudo_replace')
 //var fixture = fs.readFileSync('./fixture/sample_gh.css', 'utf-8')
-var fixture = fs.readFileSync('./fixture/sample1_sg.css', 'utf-8')
-//var fixture = fs.readFileSync('./fixture/a.css', 'utf-8')
-
+//var fixture = fs.readFileSync('./fixture/sample1_sg.css', 'utf-8')
+var fixture = fs.readFileSync('./fixture/a.css', 'utf-8')
 // On jsdom cannot compute pseudo.
-var PSEUDO_REPLACEMENT = ".__pseudopseudopseudopseudo__"
-function replacePseudoFunc(str){
-  return str.replace(/:/g, PSEUDO_REPLACEMENT)
-}
-function restorePseudoFunc(str){
-  var reg = new RegExp(PSEUDO_REPLACEMENT, "g")
-  return str.replace(reg, ":")
-}
 // Do Takigyo!
 
 function mizugyo(cssSource){
@@ -38,27 +31,23 @@ function mizugyo(cssSource){
   })
 }
 
-function injectJs(selectors){
-  var s = selectors.map(function(sl){
-    return '"' + sl + '"'
-  })
-  var arr = "[" + s.join(",") + "]"
-  var callback = function(err, result){
-    console.log(result)
-  }
-  return "gcs( "+arr+"," + callback.toString() + " )"
-}
+
 
 function gyozui(cssSource){
-  var ast = getAst(cssSource)
-  var selectors = getSelectors(ast)
-  var markups = createMarkup(selectors).join("\n")
-  var style = css.stringify(ast)
   
+  var ast = getAst(cssSource)
+  
+  var selectors = getSelectors(ast)
+  
+  var markups = createMarkup(selectors).join("\n")
+
+  var style = css.stringify(ast)
+
   var js = [
     fs.readFileSync("./tmp/b.js"),
     injectJs(selectors)
   ].join(";\n")
+  
   
   var html = createHtml(markups, style, js)
   console.log(html)
@@ -68,6 +57,7 @@ function gyozui(cssSource){
 function takigyo(cssSource){
   var ast = getAst(cssSource)
   var selectors = getSelectors(ast)
+
   var markups = createMarkup(selectors).join("\n")
   var style = css.stringify(ast)
   
@@ -76,6 +66,8 @@ function takigyo(cssSource){
     console.log(result)
   })
 }
+
+
 function createHtml(markup, style, script){
   return ["<html>"
             , "<head>"
@@ -89,13 +81,14 @@ function createHtml(markup, style, script){
 }
 
 function compute(html, selectors, cb){
-  gcs(html, selectors, function(err, result){
+  var restored = {}
+  miyable(html, selectors, function(err, result){
     Object.keys(result).forEach(function(key){
-      var restore = restorePseudoFunc(key)
-      result[restore] = result[key]
-      delete result[key]
+      var restore = pseudoReplace.restore(key)
+      restored[restore] = result[key]
     })
-    cb(err, result)
+
+    cb(err, restored)
   })
 }
 
@@ -105,7 +98,7 @@ function getAst(cssSource){
   if(!ast.type == "stylesheet"){
     return
   }
-  ast = ruleReplace(ast, replacePseudoFunc)
+  ast = ruleReplace(ast, pseudoReplace.replace)
   return ast
 }
 
@@ -126,9 +119,10 @@ function createMarkup(selectors){
   var markups = selectors.map(function(selector){
     return migawari(selector)
   })
+
   return markups
 }
 
-//takigyo(fixture)
+takigyo(fixture)
 //mizugyo(fixture)
-gyozui(fixture)
+//gyozui(fixture)
