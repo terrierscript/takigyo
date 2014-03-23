@@ -13,6 +13,7 @@ var fixture = fs.readFileSync('./fixture/a.css', 'utf-8')
 module.exports = takigyo = function(cssSource){
   var ms = makeshift(cssSource)
   var html = ms.html()
+  console.log("html")
   ms.compute(html, ms.selectors, function(err, result){
     //console.log((result))
     console.log(toCss(result))
@@ -27,4 +28,14 @@ function toCss(result){
   return pd.css(output)
 }
 
-takigyo(fixture)
+//takigyo(fixture)
+
+var request = require('request')
+var url = "http://"
+
+request.get(url, function(e, r, body){
+  var css = pd.css(body) // for jsdom. (strict css)
+  
+  console.log("download complete")
+  takigyo(body)
+})
