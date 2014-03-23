@@ -6,7 +6,9 @@
   "dependencies": {
     "migawari": "~0.0.1",
     "css": "^1.6.0",
-    "clone": "^0.1.11"
+    "clone": "^0.1.11",
+    "async": "^0.2.10",
+    "pretty-data": "^0.40.0"
   },
   "devDependencies": {},
   "scripts": {

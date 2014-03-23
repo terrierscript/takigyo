@@ -1,4 +1,3 @@
-var miyable = require('miyable')
 var pd = require('pretty-data').pd
 var csstext = require('./lib/csstext')
 var makeshift = require('./lib/makeshift')
@@ -11,23 +10,12 @@ var fs = require('fs')
 var fixture = fs.readFileSync('./fixture/a.css', 'utf-8')
 
 
-function takigyo(cssSource){
+module.exports = takigyo = function(cssSource){
   var ms = makeshift(cssSource)
   var html = ms.html()
-  compute(html, ms.selectors, function(err, result){
+  ms.compute(html, ms.selectors, function(err, result){
     //console.log((result))
     console.log(toCss(result))
-  })
-}
-
-function compute(html, selectors, cb){
-  var restored = {}
-  miyable(html, selectors, function(err, result){
-    Object.keys(result).forEach(function(key){
-      var restore = pseudoReplace.restore(key)
-      restored[restore] = result[key]
-    })
-    cb(err, restored)
   })
 }
 
