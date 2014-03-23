@@ -12,27 +12,8 @@ var pseudoReplace = require('./lib/pseudo_replace')
 //var fixture = fs.readFileSync('./fixture/sample1_sg.css', 'utf-8')
 var fixture = fs.readFileSync('./fixture/a.css', 'utf-8')
 // On jsdom cannot compute pseudo.
+
 // Do Takigyo!
-
-function mizugyo(cssSource){
-  var ast = getAst(cssSource)
-  var selectors = getSelectors(ast)
-  var style = css.stringify(ast)
-
-  selectors.forEach(function(sl){
-    var markups = migawari(sl)
-    var html = createHtml(markups, style)
-    var results = []
-
-    compute(html, sl, function(err, r){
-      console.log(sl, r)
-    })
-
-  })
-}
-
-
-
 function gyozui(cssSource){
   
   var ast = getAst(cssSource)
@@ -48,7 +29,7 @@ function gyozui(cssSource){
     injectJs(selectors)
   ].join(";\n")
   
-  
+
   var html = createHtml(markups, style, js)
   console.log(html)
   
@@ -124,5 +105,4 @@ function createMarkup(selectors){
 }
 
 takigyo(fixture)
-//mizugyo(fixture)
 //gyozui(fixture)
