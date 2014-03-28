@@ -9,7 +9,10 @@
     "clone": "^0.1.11",
     "async": "^0.2.10",
     "pretty-data": "^0.40.0",
-    "request": "^2.34.0"
+    "request": "^2.34.0",
+    "CSSselect": "^0.7.0",
+    "htmlparser2": "^3.7.1",
+    "defaults": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
