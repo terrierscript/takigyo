@@ -3,6 +3,8 @@ var analyse = require("./lib/analyse")
 var extractSelector = require('./lib/extract_selector')
 var styleRide = require('./lib/style_ride.js')
 var pd = require('pretty-data').pd
+var pseudopseudo = require('pseudopseudo')
+
 var extractStyles = function(analyzed, selector){
   var extracted = extractSelector(analyzed.sortedSelectors, selector)
   return extracted.map(function(ex){
@@ -24,7 +26,9 @@ var cssStringify = function(obj){
   return cssqs.stringify(obj, ";", ":")
 }
 var toCss = function(selector, styles){
-  return selector + "{"+ cssStringify(styles)+"}"
+  var sel = pseudopseudo.restore(selector)
+  var style = cssStringify(styles) + ";"
+  return sel + "{"+ style +"}"
 }
 
 module.exports = function(css, cb){
@@ -34,7 +38,7 @@ module.exports = function(css, cb){
     var css = toCss(selector, styleRide(styles) )
     next(null, css)
   }, function(err, result){
-    var css = pd.css(result.join('\n') )
+    var css = pd.css( result.join('') )
     cb(err,css)
   })
 }
