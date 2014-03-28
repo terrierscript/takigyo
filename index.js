@@ -24,10 +24,6 @@ var extractStyles = function(analyzed, selector){
   return flatten(styles)
 }
 
-var calcStyles = function(styles){
-  
-}
-
 module.exports = function(css){
   var analyzed = analyse(css)
   async.map(analyzed.selectors, function(selector, next){
