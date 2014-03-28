@@ -6,5 +6,7 @@ var css = fs.readFileSync('./fixture/a.css', 'utf-8')
 
 
 describe("", function(){
-  console.log(takigyo(css))
+  takigyo(css, function(err, result){
+    console.log(result)
+  })
 })

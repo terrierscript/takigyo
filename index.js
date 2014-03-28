@@ -1,35 +1,40 @@
-var analyse = require("./lib/analyse")
-var pseudopseudo = require("pseudopseudo")
-var CSSselect = require('CSSselect')
-var makedom = require("htmlparser2").parseDOM;
 var async = require('async')
-var migawari = require('migawari')
-var util = require('util')
-var merge = require('defaults')
-var flatten = require('flatten')
-
+var analyse = require("./lib/analyse")
+var extractSelector = require('./lib/extract_selector')
+var styleRide = require('./lib/style_ride.js')
+var pd = require('pretty-data').pd
 var extractStyles = function(analyzed, selector){
-  var html = migawari(selector)
-  var dom = makedom(html)
-  var styles = []
-  analyzed.sortedSelectors.forEach(function(s){
-    if(CSSselect.selectOne(s, dom) == null){
-      return
-    }
-    // override style
-    var styl = analyzed.styleDeclarations[selector]
-    styles.push(styl)
-
+  var extracted = extractSelector(analyzed.sortedSelectors, selector)
+  return extracted.map(function(ex){
+    var decl = analyzed.styleDeclarations[ex]
+    var obj = {}
+    decl.forEach(function(d){
+      obj[d.property] = d.value
+    })
+    return obj
   })
-  return flatten(styles)
 }
 
-module.exports = function(css){
+var cssStringify = function(obj){
+  var cssqs = require('querystring')
+  // no escape
+  cssqs.escape = function(str){
+    return str
+  }
+  return cssqs.stringify(obj, ";", ":")
+}
+var toCss = function(selector, styles){
+  return selector + "{"+ cssStringify(styles)+"}"
+}
+
+module.exports = function(css, cb){
   var analyzed = analyse(css)
   async.map(analyzed.selectors, function(selector, next){
-    var s = extractStyles(analyzed, selector)
-    next(null,{"selector" : selector, styles : s})
+    var styles = extractStyles(analyzed, selector)
+    var css = toCss(selector, styleRide(styles) )
+    next(null, css)
   }, function(err, result){
-    console.log(result)
+    var css = pd.css(result.join('\n') )
+    cb(err,css)
   })
 }

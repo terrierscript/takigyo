@@ -12,7 +12,8 @@
     "request": "^2.34.0",
     "CSSselect": "^0.7.0",
     "htmlparser2": "^3.7.1",
-    "defaults": "^1.0.0"
+    "defaults": "^1.0.0",
+    "merge": "^1.1.2"
   },
   "devDependencies": {},
   "scripts": {
