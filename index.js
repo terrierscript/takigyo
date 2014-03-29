@@ -8,12 +8,7 @@ var pseudopseudo = require('pseudopseudo')
 var extractStyles = function(analyzed, selector){
   var extracted = extractSelector(analyzed.sortedSelectors, selector)
   return extracted.map(function(ex){
-    var decl = analyzed.styleDeclarations[ex]
-    var obj = {}
-    decl.forEach(function(d){
-      obj[d.property] = d.value
-    })
-    return obj
+    return analyzed.styles[ex]
   })
 }
 
@@ -27,11 +22,14 @@ var cssStringify = function(obj){
 }
 var toCss = function(selector, styles){
   var sel = pseudopseudo.restore(selector)
-  var style = cssStringify(styles) + ";"
+  var style = cssStringify(styles)
+  if(style){
+    style += ";"
+  }
   return sel + "{"+ style +"}"
 }
 
-module.exports = function(css, cb){
+var takigyo = function(css, cb){
   var analyzed = analyse(css)
   async.map(analyzed.selectors, function(selector, next){
     var styles = extractStyles(analyzed, selector)
@@ -42,3 +40,5 @@ module.exports = function(css, cb){
     cb(err,css)
   })
 }
+
+module.exports = takigyo

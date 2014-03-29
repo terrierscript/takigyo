@@ -6,6 +6,10 @@
   margin: 0.2em 0;
   color : blue;
 }
+.rank_item + .rank_body {
+  margin: 0.2em 0;
+  color : yellow;
+}
 a:hover{
   color: red;
   background-color:blue;
