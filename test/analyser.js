@@ -3,9 +3,9 @@ var assert = require('assert')
 var analyse = require('../lib/analyse')
 var css = fs.readFileSync('./fixture/analyser.css', 'utf-8')
 
-describe("", function(){
+describe("analyze", function(){
   var analyzed = analyse(css)
-  it("css", function(){
+  it("css has raw css", function(){
     assert.equal(analyzed.css, css)
   })
   it("styles", function(){
