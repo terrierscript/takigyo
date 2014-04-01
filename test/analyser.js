@@ -9,6 +9,13 @@ describe("", function(){
     assert.equal(analyzed.css, css)
   })
   it("styles", function(){
-    console.log(analyzed.styles)
+    expect = {
+      '.rank_item .rank_body': { margin: '0.2em 0', color: 'red' },
+      '.rank_item > .rank_body': { margin: '0.2em 0', color: 'blue' },
+      '.rank_item + .rank_body': { margin: '0.2em 0', color: 'yellow' }
+    }
+    assert.deepEqual(
+      expect, analyzed.styles
+    )
   })
 })
