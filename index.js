@@ -1,8 +1,8 @@
 var async = require('async')
 var analyse = require("./lib/analyse")
+var rework = require("rework")
 var selecollide = require("selecollide")
 var styleRide = require('./lib/style_ride.js')
-var pd = require('pretty-data').pd
 var pseudopseudo = require('pseudopseudo')
 var csstext = require('csstext')
 
@@ -19,23 +19,20 @@ var toCss = function(selector, styles){
 }
 
 var takigyo = function(css, cb){
-
   var analyzed = analyse(css)
-  var extracted = selecollide(analyzed.sortedSelectors)
+  var extractedMap = selecollide(analyzed.sortedSelectors, {speed: true})
 
-  var overrided = Object.keys(extracted).map(function(selector){
+  var overrided = analyzed.sortedSelectors.map(function(selector){
     override = extracted[selector]
-    override.push(selector)
+    override.unshift(selector)
     // 順序ちょっと怪しい。
     var styles = extractStyles(analyzed, override)
     var s = styleRide(styles)
 
     css = toCss(selector,  s)
-
     return css
   }).join("\n")
-
-  cb(null, pd.css(overrided))
+  cb(null, overrided)
 }
 
 module.exports = takigyo
