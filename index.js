@@ -1,6 +1,6 @@
 var async = require('async')
 var analyse = require("./lib/analyse")
-var extractSelector = require('./lib/extract_selector')
+var selecollide = require("selecollide")
 var styleRide = require('./lib/style_ride.js')
 var pd = require('pretty-data').pd
 var pseudopseudo = require('pseudopseudo')
@@ -19,26 +19,23 @@ var toCss = function(selector, styles){
 }
 
 var takigyo = function(css, cb){
+
   var analyzed = analyse(css)
-  async.map(analyzed.selectors, function(selector, next){
-    //var styles = extractStyles(analyzed, selector)
-    //var css = toCss(selector, styleRide(styles) )
-    var extracted = extractSelector(analyzed.sortedSelectors, selector)
-    var obj = {}
-    next(null, {
-      selector : selector,
-      override : extracted
-    })
-  }, function(err, hits){
-    var css = hits.map(function(item){
-      var selector = item["selector"]
-      var override = item["override"]
-      var styles = extractStyles(analyzed, override)
-      return toCss(selector, styleRide(styles) )
-    }).join("\n")
-    css = pd.css(css)
-    cb(err, css)
-  })
+  var extracted = selecollide(analyzed.sortedSelectors)
+
+  var overrided = Object.keys(extracted).map(function(selector){
+    override = extracted[selector]
+    override.push(selector)
+    // 順序ちょっと怪しい。
+    var styles = extractStyles(analyzed, override)
+    var s = styleRide(styles)
+
+    css = toCss(selector,  s)
+
+    return css
+  }).join("\n")
+
+  cb(null, pd.css(overrided))
 }
 
 module.exports = takigyo
