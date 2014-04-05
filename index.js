@@ -23,7 +23,7 @@ var takigyo = function(css, cb){
   var extractedMap = selecollide(analyzed.sortedSelectors, {speed: true})
 
   var overrided = analyzed.sortedSelectors.map(function(selector){
-    override = extracted[selector]
+    override = extractedMap[selector]
     override.unshift(selector)
     // 順序ちょっと怪しい。
     var styles = extractStyles(analyzed, override)
